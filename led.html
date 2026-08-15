@@ -57,7 +57,10 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            
+            /* Thêm bóng đổ cho popup */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.4);
+            
             opacity: 0;
             transform: translateX(-50px);
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -66,26 +69,39 @@
 
         .notif-popup.active { opacity: 1; transform: translateX(0); }
         .notif-icon { width: 30px; height: 30px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; }
-        .notif-content { color: white; font-size: 1.2vw; font-weight: 500; margin: 0; }
+        .notif-content { color: white; font-size: 1.2vw; font-weight: 500; margin: 0; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
-        /* KHUNG CÂU HỎI CHÍNH */
+        /* KHUNG CÂU HỎI CHÍNH - ĐÃ NÂNG CẤP HIỆU ỨNG KÍNH 3D */
         .question-box {
             position: absolute;
-            top: 55%; /* Đã nâng vị trí mặc định lên cao hơn */
+            top: 55%; 
             left: 50%;
             z-index: 2;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            
+            /* Dùng Gradient nền để tạo hướng sáng từ góc trên trái hắt xuống */
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            
+            /* Phân bổ lại độ sáng của viền: Viền trên/trái sáng hơn viền dưới/phải (như cạnh kính hắt sáng) */
+            border-top: 1px solid rgba(255, 255, 255, 0.6);
+            border-left: 1px solid rgba(255, 255, 255, 0.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            
             border-radius: 20px;
-            padding: 30px 50px;
+            padding: 35px 50px;
             max-width: 75%;
             text-align: center;
             opacity: 0;
-            transform: translate(-50%, 30px) scale(0.95);
             
-            /* Thuộc tính transition sẽ giúp việc di chuyển bằng nút bấm mượt mà */
+            /* TỔNG HỢP BÓNG ĐỔ (Drop Shadow + Inner Shadow) */
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.4),       /* Bóng đen mờ tỏa rộng tạo độ nổi */
+                0 10px 20px rgba(0, 0, 0, 0.2),       /* Bóng đen gắt ở sát cạnh tạo độ sâu */
+                inset 0 1px 2px rgba(255, 255, 255, 0.5); /* Ánh sáng hắt nhẹ vào viền trong */
+
+            transform: translate(-50%, 30px) scale(0.95);
             transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: none;
         }
@@ -99,6 +115,9 @@
             font-weight: 700; 
             margin: 0; 
             line-height: 1.5; 
+            
+            /* Đổ bóng nhẹ cho font chữ để tránh bị lẫn vào cảnh nền */
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
         }
     </style>
 </head>
@@ -124,32 +143,30 @@
         const qText = document.getElementById('question-text');
         const notifBox = document.getElementById('notif-box');
         
-        let currentTop = 55; // Vị trí mặc định là 55%
+        let currentTop = 55;
 
         const channel = new BroadcastChannel('talkshow_channel');
 
         channel.onmessage = (event) => {
             const msg = event.data;
 
-            // Xử lý các lệnh hệ thống
             if (msg === "CMD_SHOW_NOTIFICATION") {
                 triggerNotification();
                 return;
             }
             
             if (msg === "CMD_POS_UP") {
-                currentTop -= 2; // Nhích lên 2%
+                currentTop -= 2; 
                 qBox.style.top = currentTop + "%";
                 return;
             }
 
             if (msg === "CMD_POS_DOWN") {
-                currentTop += 2; // Nhích xuống 2%
+                currentTop += 2; 
                 qBox.style.top = currentTop + "%";
                 return;
             }
 
-            // Xử lý nội dung câu hỏi
             if (msg === "") {
                 qBox.classList.remove('show');
                 qBox.classList.add('hide');
