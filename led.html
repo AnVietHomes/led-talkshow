@@ -27,9 +27,6 @@
             max-height: calc(100vw * (9 / 16)); 
             background: #000; 
             overflow: hidden; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
         }
 
         #bg-video { 
@@ -45,11 +42,11 @@
             -webkit-user-drag: none;
         }
 
-        /* POPUP THÔNG BÁO GÓC TRÁI - Đã ép sát lề hơn */
+        /* POPUP THÔNG BÁO GÓC TRÁI */
         .notif-popup {
             position: absolute;
-            top: 40px; /* Cố định cách trần 40px */
-            left: 40px; /* Cố định cách lề trái 40px */
+            top: 40px; 
+            left: 40px; 
             z-index: 10;
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(12px);
@@ -73,29 +70,33 @@
 
         /* KHUNG CÂU HỎI CHÍNH */
         .question-box {
-            position: relative;
+            position: absolute;
+            top: 66%; /* Điểm neo hạ xuống phần không gian trống trên bộ sofa */
+            left: 50%;
             z-index: 2;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 20px;
-            padding: 40px 60px;
-            max-width: 80%;
+            padding: 30px 50px; /* Thu gọn padding để box mỏng hơn */
+            max-width: 75%;
             text-align: center;
             opacity: 0;
-            transform: translateY(30px) scale(0.95);
+            
+            /* Dùng translate(-50%, Y) để vừa căn giữa ngang, vừa tạo hiệu ứng In/Out dọc */
+            transform: translate(-50%, 30px) scale(0.95);
             transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: none;
         }
         
-        .question-box.show { display: block; opacity: 1; transform: translateY(0) scale(1); }
-        .question-box.hide { opacity: 0; transform: translateY(-30px) scale(0.95); }
+        .question-box.show { display: block; opacity: 1; transform: translate(-50%, 0) scale(1); }
+        .question-box.hide { opacity: 0; transform: translate(-50%, -30px) scale(0.95); }
         
-        /* FONT CHỮ CÂU HỎI - Đã thu nhỏ */
+        /* FONT CHỮ CÂU HỎI */
         #question-text { 
             color: #ffffff; 
-            font-size: 2.2vw; /* Giảm từ 3.5vw xuống 2.2vw */
+            font-size: 1.6vw; /* Đã giảm đáng kể kích thước chữ */
             font-weight: 700; 
             margin: 0; 
             line-height: 1.5; 
@@ -105,7 +106,6 @@
 <body>
 
     <div class="ratio-16-9">
-        <!-- Đã thêm ./ vào đường dẫn src để GitHub Pages nhận diện chính xác -->
         <video id="bg-video" autoplay loop muted playsinline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen">
             <source src="./bgt.mp4" type="video/mp4">
         </video>
