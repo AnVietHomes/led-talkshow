@@ -32,7 +32,6 @@
             align-items: center; 
         }
 
-        /* VIDEO NỀN - Bổ sung khóa tương tác */
         #bg-video { 
             position: absolute; 
             top: 0; 
@@ -41,26 +40,26 @@
             height: 100%; 
             object-fit: cover; 
             z-index: 1; 
-            pointer-events: none; /* Khóa mọi thao tác click, hover chuột */
-            user-select: none; /* Không cho bôi đen */
-            -webkit-user-drag: none; /* Không cho kéo thả video */
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
         }
 
-        /* POPUP THÔNG BÁO GÓC TRÁI */
+        /* POPUP THÔNG BÁO GÓC TRÁI - Đã ép sát lề hơn */
         .notif-popup {
             position: absolute;
-            top: 5%;
-            left: 3%;
+            top: 40px; /* Cố định cách trần 40px */
+            left: 40px; /* Cố định cách lề trái 40px */
             z-index: 10;
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 12px;
-            padding: 15px 25px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             opacity: 0;
             transform: translateX(-50px);
@@ -69,8 +68,8 @@
         }
 
         .notif-popup.active { opacity: 1; transform: translateX(0); }
-        .notif-icon { width: 35px; height: 35px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; }
-        .notif-content { color: white; font-size: 1.1vw; font-weight: 500; margin: 0; }
+        .notif-icon { width: 30px; height: 30px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; }
+        .notif-content { color: white; font-size: 1.2vw; font-weight: 500; margin: 0; }
 
         /* KHUNG CÂU HỎI CHÍNH */
         .question-box {
@@ -92,15 +91,23 @@
         
         .question-box.show { display: block; opacity: 1; transform: translateY(0) scale(1); }
         .question-box.hide { opacity: 0; transform: translateY(-30px) scale(0.95); }
-        #question-text { color: #ffffff; font-size: 3.5vw; font-weight: 700; margin: 0; line-height: 1.4; }
+        
+        /* FONT CHỮ CÂU HỎI - Đã thu nhỏ */
+        #question-text { 
+            color: #ffffff; 
+            font-size: 2.2vw; /* Giảm từ 3.5vw xuống 2.2vw */
+            font-weight: 700; 
+            margin: 0; 
+            line-height: 1.5; 
+        }
     </style>
 </head>
 <body>
 
     <div class="ratio-16-9">
-        <!-- Bổ sung các attribute khóa UI của trình duyệt -->
+        <!-- Đã thêm ./ vào đường dẫn src để GitHub Pages nhận diện chính xác -->
         <video id="bg-video" autoplay loop muted playsinline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen">
-            <source src="bgt.mp4" type="video/mp4">
+            <source src="./bgt.mp4" type="video/mp4">
         </video>
 
         <div class="notif-popup" id="notif-box">
@@ -160,7 +167,6 @@
             }, 5000);
         }
         
-        // Đoạn script bổ sung để khóa menu chuột phải trên toàn bộ trang web
         document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
 </body>
