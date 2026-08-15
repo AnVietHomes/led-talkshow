@@ -71,7 +71,7 @@
         /* KHUNG CÂU HỎI CHÍNH */
         .question-box {
             position: absolute;
-            top: 66%; /* Điểm neo hạ xuống phần không gian trống trên bộ sofa */
+            top: 55%; /* Đã nâng vị trí mặc định lên cao hơn */
             left: 50%;
             z-index: 2;
             background: rgba(255, 255, 255, 0.15);
@@ -79,13 +79,13 @@
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 20px;
-            padding: 30px 50px; /* Thu gọn padding để box mỏng hơn */
+            padding: 30px 50px;
             max-width: 75%;
             text-align: center;
             opacity: 0;
-            
-            /* Dùng translate(-50%, Y) để vừa căn giữa ngang, vừa tạo hiệu ứng In/Out dọc */
             transform: translate(-50%, 30px) scale(0.95);
+            
+            /* Thuộc tính transition sẽ giúp việc di chuyển bằng nút bấm mượt mà */
             transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: none;
         }
@@ -93,10 +93,9 @@
         .question-box.show { display: block; opacity: 1; transform: translate(-50%, 0) scale(1); }
         .question-box.hide { opacity: 0; transform: translate(-50%, -30px) scale(0.95); }
         
-        /* FONT CHỮ CÂU HỎI */
         #question-text { 
             color: #ffffff; 
-            font-size: 1.6vw; /* Đã giảm đáng kể kích thước chữ */
+            font-size: 1.6vw; 
             font-weight: 700; 
             margin: 0; 
             line-height: 1.5; 
@@ -124,17 +123,33 @@
         const qBox = document.getElementById('q-box');
         const qText = document.getElementById('question-text');
         const notifBox = document.getElementById('notif-box');
+        
+        let currentTop = 55; // Vị trí mặc định là 55%
 
         const channel = new BroadcastChannel('talkshow_channel');
 
         channel.onmessage = (event) => {
             const msg = event.data;
 
+            // Xử lý các lệnh hệ thống
             if (msg === "CMD_SHOW_NOTIFICATION") {
                 triggerNotification();
                 return;
             }
+            
+            if (msg === "CMD_POS_UP") {
+                currentTop -= 2; // Nhích lên 2%
+                qBox.style.top = currentTop + "%";
+                return;
+            }
 
+            if (msg === "CMD_POS_DOWN") {
+                currentTop += 2; // Nhích xuống 2%
+                qBox.style.top = currentTop + "%";
+                return;
+            }
+
+            // Xử lý nội dung câu hỏi
             if (msg === "") {
                 qBox.classList.remove('show');
                 qBox.classList.add('hide');
