@@ -86,7 +86,11 @@
             
             border-radius: 20px;
             padding: 35px 50px;
-            max-width: 75%;
+            
+            /* ĐÃ TĂNG CHIỀU RỘNG TỐI ĐA LÊN 90% ĐỂ GIÃN SANG 2 BÊN */
+            max-width: 90%;
+            width: fit-content;
+            
             text-align: center;
             opacity: 0;
             
@@ -103,10 +107,9 @@
         .question-box.show { display: block; opacity: 1; transform: translate(-50%, 0) scale(1); }
         .question-box.hide { opacity: 0; transform: translate(-50%, -30px) scale(0.95); }
         
-        /* FONT CHỮ CÂU HỎI - ĐÃ GIẢM KÍCH THƯỚC */
         #question-text { 
             color: #ffffff; 
-            font-size: 1.3vw; /* Giảm từ 1.6vw xuống 1.3vw */
+            font-size: 1.3vw; 
             font-weight: 700; 
             margin: 0; 
             line-height: 1.5; 
