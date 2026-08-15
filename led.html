@@ -57,10 +57,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            
-            /* Thêm bóng đổ cho popup */
             box-shadow: 0 15px 35px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.4);
-            
             opacity: 0;
             transform: translateX(-50px);
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -71,19 +68,17 @@
         .notif-icon { width: 30px; height: 30px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; }
         .notif-content { color: white; font-size: 1.2vw; font-weight: 500; margin: 0; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
-        /* KHUNG CÂU HỎI CHÍNH - ĐÃ NÂNG CẤP HIỆU ỨNG KÍNH 3D */
+        /* KHUNG CÂU HỎI CHÍNH */
         .question-box {
             position: absolute;
             top: 55%; 
             left: 50%;
             z-index: 2;
             
-            /* Dùng Gradient nền để tạo hướng sáng từ góc trên trái hắt xuống */
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             
-            /* Phân bổ lại độ sáng của viền: Viền trên/trái sáng hơn viền dưới/phải (như cạnh kính hắt sáng) */
             border-top: 1px solid rgba(255, 255, 255, 0.6);
             border-left: 1px solid rgba(255, 255, 255, 0.4);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -95,11 +90,10 @@
             text-align: center;
             opacity: 0;
             
-            /* TỔNG HỢP BÓNG ĐỔ (Drop Shadow + Inner Shadow) */
             box-shadow: 
-                0 30px 60px rgba(0, 0, 0, 0.4),       /* Bóng đen mờ tỏa rộng tạo độ nổi */
-                0 10px 20px rgba(0, 0, 0, 0.2),       /* Bóng đen gắt ở sát cạnh tạo độ sâu */
-                inset 0 1px 2px rgba(255, 255, 255, 0.5); /* Ánh sáng hắt nhẹ vào viền trong */
+                0 30px 60px rgba(0, 0, 0, 0.4),       
+                0 10px 20px rgba(0, 0, 0, 0.2),       
+                inset 0 1px 2px rgba(255, 255, 255, 0.5); 
 
             transform: translate(-50%, 30px) scale(0.95);
             transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -109,14 +103,13 @@
         .question-box.show { display: block; opacity: 1; transform: translate(-50%, 0) scale(1); }
         .question-box.hide { opacity: 0; transform: translate(-50%, -30px) scale(0.95); }
         
+        /* FONT CHỮ CÂU HỎI - ĐÃ GIẢM KÍCH THƯỚC */
         #question-text { 
             color: #ffffff; 
-            font-size: 1.6vw; 
+            font-size: 1.3vw; /* Giảm từ 1.6vw xuống 1.3vw */
             font-weight: 700; 
             margin: 0; 
             line-height: 1.5; 
-            
-            /* Đổ bóng nhẹ cho font chữ để tránh bị lẫn vào cảnh nền */
             text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
         }
     </style>
