@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LED Display - An Viet Homes</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
-    <!-- Thư viện Firebase Realtime Database -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
@@ -18,11 +17,17 @@
             position: relative; width: 100vw; max-width: calc(100vh * (16 / 9)); 
             height: 100vh; max-height: calc(100vw * (9 / 16)); background: #000; overflow: hidden; 
         }
-        #bg-video { 
+        
+        /* Cấu hình 2 video xếp chồng để tạo cơ chế chuyển đổi mượt mà */
+        .bg-video { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             object-fit: cover; z-index: 1; pointer-events: none; user-select: none; -webkit-user-drag: none; 
+            opacity: 0; transition: opacity 0.2s ease;
         }
-        
+        .bg-video.active {
+            opacity: 1;
+        }
+
         /* POPUP THÔNG BÁO GÓC TRÁI */
         .notif-popup {
             position: absolute; top: 40px; left: 40px; z-index: 10;
@@ -63,9 +68,14 @@
 </head>
 <body>
     <div class="ratio-16-9">
-        <video id="bg-video" autoplay loop muted playsinline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen">
+        <!-- Sử dụng 2 thẻ video luân phiên để triệt tiêu hoàn toàn độ trễ khi loop -->
+        <video id="vid1" class="bg-video active" muted playsinline disablePictureInPicture>
             <source src="./bgt.mp4" type="video/mp4">
         </video>
+        <video id="vid2" class="bg-video" muted playsinline disablePictureInPicture>
+            <source src="./bgt.mp4" type="video/mp4">
+        </video>
+
         <div class="notif-popup" id="notif-box">
             <div class="notif-icon">🔔</div>
             <p class="notif-content">Bạn vừa nhận được 01 câu hỏi mới từ người tham gia</p>
@@ -76,10 +86,48 @@
     </div>
 
     <script>
-        // Kết nối cơ sở dữ liệu thời gian thực trên đám mây
+        // --- XỬ LÝ VIDEO SEAMLESS LOOP KHÔNG KHỰNG ---
+        const v1 = document.getElementById('vid1');
+        const v2 = document.getElementById('vid2');
+        let activeVid = 1;
+
+        v1.play();
+
+        function setupSeamlessLoop(current, next, nextNum) {
+            current.ontimeupdate = function() {
+                // Khi video hiện tại chạy gần đến cuối (còn lại 0.4 giây), kích hoạt video tiếp theo ngầm bên dưới
+                if (current.duration - current.currentTime <= 0.4 && !next.dataset.triggered) {
+                    next.dataset.triggered = "true";
+                    next.currentTime = 0;
+                    next.play();
+                }
+            };
+
+            current.onended = function() {
+                current.pause();
+                current.classList.remove('active');
+                next.classList.add('active');
+                
+                current.removeAttribute('data-triggered');
+                activeVid = nextNum;
+                
+                // Thiết lập tiếp tục cho vòng lặp tiếp theo
+                if (activeVid === 1) {
+                    setupSeamlessLoop(v2, v1, 1);
+                } else {
+                    setupSeamlessLoop(v1, v2, 2);
+                }
+            };
+        }
+
+        // Bắt đầu chu trình loop giữa v1 và v2
+        setupSeamlessLoop(v1, v2, 2);
+
+
+        // --- KẾT NỐI FIREBASE REALTIME ĐIỀU KHIỂN CÂU HỎI ---
         const firebaseConfig = {
-    databaseURL: "https://talkshow-d92b4-default-rtdb.asia-southeast1.firebasedatabase.app"
-};
+            databaseURL: "https://talkshow-d92b4-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -88,7 +136,6 @@
         const notifBox = document.getElementById('notif-box');
         let currentTop = 55;
 
-        // Lắng nghe lệnh từ xa bất kể máy quản trị dùng mạng dây hay wifi khác phân vùng
         db.ref('control').on('value', (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
@@ -140,6 +187,7 @@
             notifBox.classList.add('active');
             setTimeout(() => { notifBox.classList.remove('active'); }, 5000);
         }
+
         document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
 </body>
