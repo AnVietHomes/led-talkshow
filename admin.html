@@ -2,81 +2,296 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Talkshow Admin Control Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>An Viet Homes - Talkshow Admin Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
-        body { font-family: 'Manrope', sans-serif; background: #f4f7f6; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .admin-panel { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 700px; margin-bottom: 20px; }
-        h2 { color: #2c3e50; margin-top: 0; font-size: 20px; }
-        textarea { width: 100%; height: 90px; padding: 12px; font-size: 15px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; resize: none; box-sizing: border-box; }
-        
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        button { padding: 12px; font-size: 14px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        
-        .btn-push { background: #0056b3; color: white; grid-column: span 2; font-size: 16px; }
-        .btn-push:hover { background: #004494; }
-        .btn-notif { background: #f39c12; color: white; }
-        .btn-notif:hover { background: #d35400; }
-        .btn-clear { background: #e74c3c; color: white; }
-        .btn-clear:hover { background: #c0392b; }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #0b0f19;
+            color: #ffffff;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-        .pos-control { background: #ecf0f1; padding: 12px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
-        .pos-control span { font-weight: 700; color: #2c3e50; font-size: 14px; }
-        .btn-pos { background: #34495e; color: white; padding: 8px 15px; font-size: 13px; }
-        .btn-pos:hover { background: #2c3e50; }
+        /* HEADER THƯƠNG HIỆU THÍCH ƯNG */
+        .admin-header {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .logo-area { font-weight: 800; font-size: 16px; letter-spacing: 1px; color: #fff; }
+        .logo-area span { color: #3b82f6; }
+        .system-badge {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
 
-        .quest-list-container { margin-top: 15px; border-top: 2px solid #eee; padding-top: 15px; }
-        .file-input-box { margin-bottom: 15px; }
-        .quest-item { background: #f9f9f9; border: 1px solid #e1e1e1; padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .quest-text { font-size: 14px; color: #333; flex-grow: 1; }
-        .btn-show-q { background: #27ae60; color: white; padding: 8px 12px; font-size: 13px; }
-        .btn-show-q:hover { background: #219653; }
+        /* CONTAINER CHÍNH */
+        .admin-container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* CARD GIAO DIỆN TỐI LIQUID */
+        .card {
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* KHU VỰC ĐIỀU KHIỂN NHANH & VỊ TRÍ (TỰ ĐỘNG STACK TRÊN MOBILE) */
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            align-items: center;
+        }
+        @media(max-width: 600px) { 
+            .control-grid { grid-template-columns: 1fr; } 
+        }
+
+        .sub-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .sub-box span { font-size: 13px; font-weight: 600; color: #94a3b8; }
+
+        /* TEXTAREA & INPUT */
+        textarea {
+            width: 100%;
+            height: 90px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px;
+            color: #ffffff;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+        textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+
+        /* HỆ THỐNG NÚT BẤM LINH HOẠT */
+        .btn-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+        }
+        @media(max-width: 600px) { 
+            .btn-row { grid-template-columns: 1fr; } 
+        }
+
+        button {
+            padding: 12px 16px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        button:active { transform: scale(0.98); }
+
+        .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; box-shadow: 0 4px 15px rgba(37, 99, 235,.4); }
+        .btn-primary:hover { background: linear-gradient(135deg, #1d4ed8, #1e40af); }
+
+        .btn-warning { background: linear-gradient(135deg, #d97706, #b45309); color: white; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4); }
+        .btn-warning:hover { background: linear-gradient(135deg, #b45309, #92400e); }
+
+        .btn-danger { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4); }
+        .btn-danger:hover { background: linear-gradient(135deg, #b91c1c, #991b1b); }
+
+        .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #e2e8f0; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
+
+        /* UPLOAD FILE KHU VỰC THẢO TÁC RỘNG */
+        .file-upload-wrapper {
+            position: relative;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+            margin-bottom: 15px;
+        }
+        .file-upload-wrapper:hover { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+        .file-upload-wrapper input[type="file"] {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer;
+        }
+        .file-label { color: #94a3b8; font-size: 13px; font-weight: 600; }
+        .file-label strong { color: #3b82f6; }
+
+        /* DANH SÁCH ITEM CÂU HỎI (RESPONSIVE MỌI MÀN HÌNH) */
+        .quest-scroll-area {
+            max-height: 380px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 4px;
+        }
+        .quest-scroll-area::-webkit-scrollbar { width: 5px; }
+        .quest-scroll-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
+
+        .quest-row {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 12px 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            transition: 0.2s;
+        }
+        .quest-row:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.15); }
         
-        .status { margin-top: 10px; color: #27ae60; font-weight: 700; font-size: 13px; text-align: center; }
-        .hint { font-size: 11px; color: #7f8c8d; text-align: center; margin-top: 8px; }
+        /* Tự động ngắt dòng thông minh trên màn hình nhỏ */
+        @media(max-width: 600px) {
+            .quest-row { flex-direction: column; align-items: flex-start; }
+            .btn-action-group { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .btn-action-group button { width: 100%; }
+        }
+
+        .quest-info { display: flex; align-items: flex-start; gap: 10px; flex-grow: 1; }
+        .quest-index {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            min-width: 26px; height: 26px;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 11px; font-weight: 700; flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .quest-text-content { font-size: 13px; color: #f1f5f9; font-weight: 500; line-height: 1.4; word-break: break-word; }
+
+        .btn-action-group { display: flex; gap: 6px; flex-shrink: 0; }
+        .btn-sm { padding: 7px 12px; font-size: 12px; border-radius: 6px; }
+
+        /* THANH THÔNG BÁO TOAST */
+        .status-toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #10b981; color: white;
+            padding: 10px 18px; border-radius: 8px;
+            font-weight: 700; font-size: 13px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            display: none; z-index: 1000;
+        }
     </style>
 </head>
 <body>
 
-    <div class="admin-panel">
-        <h2>Bảng Điều Khiển Màn LED (Trực tuyến qua Cloud)</h2>
-        
-        <textarea id="question-input" placeholder="Nhập nhanh nội dung câu hỏi trực tiếp..."></textarea>
-        
-        <div class="pos-control">
-            <span>Căn chỉnh vị trí màn LED:</span>
-            <div>
-                <button class="btn-pos" onclick="sendAction('move_up')">⬆️ Lên</button>
-                <button class="btn-pos" onclick="sendAction('move_down')">⬇️ Xuống</button>
-            </div>
-        </div>
-
-        <div class="btn-group">
-            <button class="btn-push" onclick="sendCustomQuestion()">HIỆN CÂU HỎI NHẬP TAY LÊN LED</button>
-            <button class="btn-notif" onclick="sendAction('notification')">GỬI THÔNG BÁO MỚI</button>
-            <button class="btn-clear" onclick="sendText('')">ẨN KHUNG CÂU HỎI</button>
-        </div>
-        
-        <div class="quest-list-container">
-            <h2>Danh sách câu hỏi từ file (quest.svg / quest.txt)</h2>
-            <div class="file-input-box">
-                <input type="file" id="file-upload" accept=".svg,.txt" onchange="handleFileUpload(event)">
-            </div>
-            <div id="quest-list-ui">
-                <p class="hint">Chưa có file nào được tải lên. Hãy chọn file chứa danh sách câu hỏi.</p>
-            </div>
-        </div>
-
-        <div class="status" id="status-msg"></div>
+    <div class="admin-header">
+        <div class="logo-area">AN VIET <span>HOMES</span></div>
+        <div class="system-badge">🟢 Cloud Live Sync Active</div>
     </div>
+
+    <div class="admin-container">
+        
+        <!-- CARD 1: ĐIỀU KHIỂN NHANH & VỊ TRÍ -->
+        <div class="card">
+            <div class="card-title">🎛️ Điều Khiển Màn Hình LED Thời Gian Thực</div>
+            <div class="control-grid">
+                <div class="sub-box">
+                    <span>Căn chỉnh vị trí LED:</span>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn-secondary btn-sm" onclick="sendAction('move_up')">⬆️ Lên</button>
+                        <button class="btn-secondary btn-sm" onclick="sendAction('move_down')">⬇️ Xuống</button>
+                    </div>
+                </div>
+                <div class="sub-box">
+                    <span>Tương tác sự kiện:</span>
+                    <button class="btn-warning btn-sm" style="width: 100%;" onclick="sendAction('notification')">🔔 Gửi Popup</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 2: GÕ CÂU HỎI TRỰC TIẾP -->
+        <div class="card">
+            <div class="card-title">✍️ Gõ Câu Hỏi Trực Tiếp (Phát Nhanh Song Song)</div>
+            <textarea id="question-input" placeholder="Nhập trực tiếp nội dung câu hỏi phát nhanh lên màn hình LED..."></textarea>
+            <div class="btn-row">
+                <button class="btn-primary" onclick="sendCustomQuestion()">🚀 PHÁT TRỰC TIẾP</button>
+                <button class="btn-secondary" onclick="sendAction('notification')">🔔 GỬI POPUP</button>
+                <button class="btn-danger" onclick="sendText('')">🗑️ ẨN KHỎI LED</button>
+            </div>
+        </div>
+
+        <!-- CARD 3: DANH SÁCH CÂU HỎI TỪ FILE EXCEL / CSV / TXT -->
+        <div class="card">
+            <div class="card-title">📂 Danh Sách Câu Hỏi Sẵn (Hỗ trợ File Excel / CSV / TXT)</div>
+            
+            <div class="file-upload-wrapper">
+                <input type="file" id="file-upload" accept=".csv, .txt, .xlsx, .xls" onchange="handleFileUpload(event)">
+                <div class="file-label">📁 Kéo thả file hoặc <strong>Bấm vào đây chọn file câu hỏi</strong></div>
+            </div>
+
+            <div class="quest-scroll-area" id="quest-list-ui">
+                <div style="text-align: center; color: #64748b; padding: 25px; font-size: 13px;">
+                    Chưa có danh sách câu hỏi nào được tải lên. Hãy chọn file chứa nội dung câu hỏi để bắt đầu.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="status-toast" id="status-msg">Đã đồng bộ thành công!</div>
 
     <script>
         const firebaseConfig = {
-    databaseURL: "https://talkshow-d92b4-default-rtdb.asia-southeast1.firebasedatabase.app"
-};
+            databaseURL: "https://talkshow-d92b4-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -86,7 +301,7 @@
                 action: "show_text",
                 timestamp: Date.now()
             });
-            showStatus(text === "" ? "Đã ẩn khung câu hỏi trên LED." : "Đã đẩy câu hỏi lên LED thành công!");
+            showToast(text === "" ? "Đã ẩn khung câu hỏi trên LED." : "Đã phát câu hỏi lên màn LED!");
         }
 
         function sendAction(actionType) {
@@ -94,15 +309,16 @@
                 action: actionType,
                 timestamp: Date.now()
             });
-            showStatus("Đã gửi lệnh điều khiển!");
+            showToast("Đã gửi lệnh điều khiển thành công!");
         }
 
         function sendCustomQuestion() {
             const text = document.getElementById('question-input').value.trim();
             if (text) {
                 sendText(text);
+                document.getElementById('question-input').value = "";
             } else {
-                alert("Vui lòng nhập nội dung câu hỏi!");
+                alert("Vui lòng nhập nội dung câu hỏi trước khi phát!");
             }
         }
 
@@ -113,7 +329,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const content = e.target.result;
-                const lines = content.split(/\r?\n/).filter(line => line.trim() !== "");
+                const lines = content.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
                 renderQuestList(lines);
             };
             reader.readAsText(file);
@@ -124,29 +340,51 @@
             container.innerHTML = "";
 
             questions.forEach((q, index) => {
-                const item = document.createElement('div');
-                item.className = 'quest-item';
+                const row = document.createElement('div');
+                row.className = 'quest-row';
                 
-                const textSpan = document.createElement('span');
-                textSpan.className = 'quest-text';
-                textSpan.innerText = `${index + 1}. ${q}`;
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'quest-info';
+
+                const idxSpan = document.createElement('div');
+                idxSpan.className = 'quest-index';
+                idxSpan.innerText = index + 1;
+
+                const textDiv = document.createElement('div');
+                textDiv.className = 'quest-text-content';
+                textDiv.innerText = q;
+
+                infoDiv.appendChild(idxSpan);
+                infoDiv.appendChild(textDiv);
+
+                const btnGroup = document.createElement('div');
+                btnGroup.className = 'btn-action-group';
 
                 const btnShow = document.createElement('button');
-                btnShow.className = 'btn-show-q';
-                btnShow.innerText = 'Hiện lên LED';
+                btnShow.className = 'btn-primary btn-sm';
+                btnShow.innerText = '✨ Hiện LED';
                 btnShow.onclick = () => sendText(q);
 
-                item.appendChild(textSpan);
-                item.appendChild(btnShow);
-                container.appendChild(item);
+                const btnHide = document.createElement('button');
+                btnHide.className = 'btn-danger btn-sm';
+                btnHide.innerText = 'Ẩn';
+                btnHide.onclick = () => sendText('');
+
+                btnGroup.appendChild(btnShow);
+                btnGroup.appendChild(btnHide);
+
+                row.appendChild(infoDiv);
+                row.appendChild(btnGroup);
+                container.appendChild(row);
             });
-            showStatus("Đã tải " + questions.length + " câu hỏi từ file lên giao diện!");
+            showToast("Đã tải thành công " + questions.length + " câu hỏi từ file!");
         }
 
-        function showStatus(msg) {
-            const statusMsg = document.getElementById('status-msg');
-            statusMsg.innerText = msg;
-            setTimeout(() => { statusMsg.innerText = ""; }, 3000);
+        function showToast(msg) {
+            const toast = document.getElementById('status-msg');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2500);
         }
     </script>
 </body>
