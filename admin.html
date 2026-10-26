@@ -3,103 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Talkshow Admin Control</title>
+    <title>Talkshow Admin Control Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
-        body { font-family: 'Manrope', sans-serif; background: #f4f7f6; padding: 40px; display: flex; flex-direction: column; align-items: center; }
-        .admin-panel { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 600px; }
-        h2 { color: #2c3e50; margin-top: 0; }
-        textarea { width: 100%; height: 120px; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px; resize: none; box-sizing: border-box; }
+        body { font-family: 'Manrope', sans-serif; background: #f4f7f6; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .admin-panel { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 700px; margin-bottom: 20px; }
+        h2 { color: #2c3e50; margin-top: 0; font-size: 20px; }
+        textarea { width: 100%; height: 90px; padding: 12px; font-size: 15px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; resize: none; box-sizing: border-box; }
         
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        button { padding: 15px; font-size: 15px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        button { padding: 12px; font-size: 14px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
         
-        .btn-push { background: #0056b3; color: white; grid-column: span 2; font-size: 18px; }
+        .btn-push { background: #0056b3; color: white; grid-column: span 2; font-size: 16px; }
         .btn-push:hover { background: #004494; }
-        
         .btn-notif { background: #f39c12; color: white; }
         .btn-notif:hover { background: #d35400; }
-        
         .btn-clear { background: #e74c3c; color: white; }
         .btn-clear:hover { background: #c0392b; }
 
-        /* KHU VỰC NÚT CĂN CHỈNH VỊ TRÍ */
-        .pos-control {
-            background: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        .pos-control span { font-weight: 700; color: #2c3e50; }
-        .btn-pos { background: #34495e; color: white; padding: 10px 20px; font-size: 14px; }
+        .pos-control { background: #ecf0f1; padding: 12px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        .pos-control span { font-weight: 700; color: #2c3e50; font-size: 14px; }
+        .btn-pos { background: #34495e; color: white; padding: 8px 15px; font-size: 13px; }
         .btn-pos:hover { background: #2c3e50; }
+
+        /* DANH SÁCH CÂU HỎI TỪ FILE */
+        .quest-list-container { margin-top: 15px; border-top: 2px solid #eee; padding-top: 15px; }
+        .file-input-box { margin-bottom: 15px; }
+        .quest-item { background: #f9f9f9; border: 1px solid #e1e1e1; padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .quest-text { font-size: 14px; color: #333; flex-grow: 1; }
+        .btn-show-q { background: #27ae60; color: white; padding: 8px 12px; font-size: 13px; }
+        .btn-show-q:hover { background: #219653; }
+        .btn-hide-q { background: #c0392b; color: white; padding: 8px 12px; font-size: 13px; }
         
-        .status { margin-top: 15px; color: #27ae60; font-weight: 700; font-size: 14px; text-align: center; }
-        .hint { font-size: 12px; color: #7f8c8d; margin-top: 10px; text-align: center; }
+        .status { margin-top: 10px; color: #27ae60; font-weight: 700; font-size: 13px; text-align: center; }
+        .hint { font-size: 11px; color: #7f8c8d; text-align: center; margin-top: 8px; }
     </style>
 </head>
 <body>
 
     <div class="admin-panel">
-        <h2>Talkshow Control Panel</h2>
-        <textarea id="question-input" placeholder="Nhập nội dung câu hỏi..."></textarea>
+        <h2>Bảng Điều Khiển Màn LED (Trực tuyến)</h2>
+        
+        <!-- Nhập câu hỏi thủ công trực tiếp -->
+        <textarea id="question-input" placeholder="Nhập nhanh nội dung câu hỏi trực tiếp..."></textarea>
         
         <div class="pos-control">
-            <span>Căn chỉnh vị trí câu hỏi:</span>
+            <span>Căn chỉnh vị trí màn LED:</span>
             <div>
-                <button class="btn-pos" onclick="moveUp()">⬆️ Lên</button>
-                <button class="btn-pos" onclick="moveDown()">⬇️ Xuống</button>
+                <button class="btn-pos" onclick="sendCommand('move_up')">⬆️ Lên</button>
+                <button class="btn-pos" onclick="sendCommand('move_down')">⬇️ Xuống</button>
             </div>
         </div>
 
         <div class="btn-group">
-            <button class="btn-push" onclick="sendQuestion()">HIỆN CÂU HỎI TRÊN LED</button>
-            <button class="btn-notif" onclick="sendNotification()">GỬI THÔNG BÁO MỚI</button>
-            <button class="btn-clear" onclick="clearScreen()">ẨN KHUNG CÂU HỎI</button>
+            <button class="btn-push" onclick="sendCustomQuestion()">HIỆN CÂU HỎI NHẬP TAY LÊN LED</button>
+            <button class="btn-notif" onclick="sendCommand('notification')">GỬI THÔNG BÁO MỚI (CHUNG)</button>
+            <button class="btn-clear" onclick="sendText('')">ẨN KHUNG CÂU HỎI</button>
         </div>
         
-        <p class="hint">* Bạn có thể bấm nút Lên/Xuống nhiều lần để di chuyển khung chữ đến vị trí ưng ý nhất khi đang live.</p>
+        <!-- Tải file quest (.svg / .txt) -->
+        <div class="quest-list-container">
+            <h2>Danh sách câu hỏi từ file (quest.svg / quest.txt)</h2>
+            <div class="file-input-box">
+                <input type="file" id="file-upload" accept=".svg,.txt" onchange="handleFileUpload(event)">
+            </div>
+            <div id="quest-list-ui">
+                <p class="hint">Chưa có file nào được tải lên. Hãy chọn file chứa danh sách câu hỏi (mỗi dòng 1 câu).</p>
+            </div>
+        </div>
+
         <div class="status" id="status-msg"></div>
     </div>
 
     <script>
-        const channel = new BroadcastChannel('talkshow_channel');
-        const statusMsg = document.getElementById('status-msg');
+        const firebaseConfig = {
+            databaseURL: "https://talkshow-anviet-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        function sendQuestion() {
+        function sendText(text) {
+            db.ref('control').set({
+                text: text,
+                action: "show_text",
+                timestamp: Date.now()
+            });
+            showStatus(text === "" ? "Đã ẩn khung câu hỏi trên LED." : "Đã cập nhật câu hỏi lên LED!");
+        }
+
+        function sendCustomQuestion() {
             const text = document.getElementById('question-input').value.trim();
-            if(text) {
-                channel.postMessage(text);
-                showStatus("Đã gửi câu hỏi!");
+            if (text) {
+                sendText(text);
             } else {
-                alert("Hãy nhập chữ trước khi gửi!");
+                alert("Vui lòng nhập nội dung câu hỏi!");
             }
         }
 
-        function sendNotification() {
-            channel.postMessage("CMD_SHOW_NOTIFICATION");
-            showStatus("Đã kích hoạt popup thông báo!");
+        function sendCommand(actionType) {
+            db.ref('control').update({
+                action: actionType,
+                timestamp: Date.now()
+            });
+            showStatus("Đã gửi lệnh: " + actionType);
         }
 
-        function clearScreen() {
-            channel.postMessage("");
-            showStatus("Đã xóa màn hình.");
+        // Đọc file danh sách câu hỏi (quest.svg hoặc quest.txt dạng mỗi hàng 1 câu)
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                // Tách theo từng dòng
+                const lines = content.split(/\r?\n/).filter(line => line.trim() !== "");
+                renderQuestList(lines);
+            };
+            reader.readAsText(file);
         }
 
-        function moveUp() {
-            channel.postMessage("CMD_POS_UP");
-            showStatus("Đã nhích khung câu hỏi LÊN.");
-        }
+        function renderQuestList(questions) {
+            const container = document.getElementById('quest-list-ui');
+            container.innerHTML = "";
 
-        function moveDown() {
-            channel.postMessage("CMD_POS_DOWN");
-            showStatus("Đã nhích khung câu hỏi XUỐNG.");
+            questions.forEach((q, index) => {
+                const item = document.createElement('div');
+                item.className = 'quest-item';
+                
+                const textSpan = document.createElement('span');
+                textSpan.className = 'quest-text';
+                textSpan.innerText = `${index + 1}. ${q}`;
+
+                const btnShow = document.createElement('button');
+                btnShow.className = 'btn-show-q';
+                btnShow.innerText = 'Hiện lên LED';
+                btnShow.onclick = () => sendText(q);
+
+                item.appendChild(textSpan);
+                item.appendChild(btnShow);
+                container.appendChild(item);
+            });
+            showStatus("Đã tải thành công " + questions.length + " câu hỏi từ file!");
         }
 
         function showStatus(msg) {
+            const statusMsg = document.getElementById('status-msg');
             statusMsg.innerText = msg;
             setTimeout(() => { statusMsg.innerText = ""; }, 3000);
         }
