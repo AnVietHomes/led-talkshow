@@ -28,14 +28,12 @@
         .btn-pos { background: #34495e; color: white; padding: 8px 15px; font-size: 13px; }
         .btn-pos:hover { background: #2c3e50; }
 
-        /* DANH SÁCH CÂU HỎI TỪ FILE */
         .quest-list-container { margin-top: 15px; border-top: 2px solid #eee; padding-top: 15px; }
         .file-input-box { margin-bottom: 15px; }
         .quest-item { background: #f9f9f9; border: 1px solid #e1e1e1; padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
         .quest-text { font-size: 14px; color: #333; flex-grow: 1; }
         .btn-show-q { background: #27ae60; color: white; padding: 8px 12px; font-size: 13px; }
         .btn-show-q:hover { background: #219653; }
-        .btn-hide-q { background: #c0392b; color: white; padding: 8px 12px; font-size: 13px; }
         
         .status { margin-top: 10px; color: #27ae60; font-weight: 700; font-size: 13px; text-align: center; }
         .hint { font-size: 11px; color: #7f8c8d; text-align: center; margin-top: 8px; }
@@ -44,33 +42,31 @@
 <body>
 
     <div class="admin-panel">
-        <h2>Bảng Điều Khiển Màn LED (Trực tuyến)</h2>
+        <h2>Bảng Điều Khiển Màn LED (Trực tuyến qua Cloud)</h2>
         
-        <!-- Nhập câu hỏi thủ công trực tiếp -->
         <textarea id="question-input" placeholder="Nhập nhanh nội dung câu hỏi trực tiếp..."></textarea>
         
         <div class="pos-control">
             <span>Căn chỉnh vị trí màn LED:</span>
             <div>
-                <button class="btn-pos" onclick="sendCommand('move_up')">⬆️ Lên</button>
-                <button class="btn-pos" onclick="sendCommand('move_down')">⬇️ Xuống</button>
+                <button class="btn-pos" onclick="sendAction('move_up')">⬆️ Lên</button>
+                <button class="btn-pos" onclick="sendAction('move_down')">⬇️ Xuống</button>
             </div>
         </div>
 
         <div class="btn-group">
             <button class="btn-push" onclick="sendCustomQuestion()">HIỆN CÂU HỎI NHẬP TAY LÊN LED</button>
-            <button class="btn-notif" onclick="sendCommand('notification')">GỬI THÔNG BÁO MỚI (CHUNG)</button>
+            <button class="btn-notif" onclick="sendAction('notification')">GỬI THÔNG BÁO MỚI</button>
             <button class="btn-clear" onclick="sendText('')">ẨN KHUNG CÂU HỎI</button>
         </div>
         
-        <!-- Tải file quest (.svg / .txt) -->
         <div class="quest-list-container">
             <h2>Danh sách câu hỏi từ file (quest.svg / quest.txt)</h2>
             <div class="file-input-box">
                 <input type="file" id="file-upload" accept=".svg,.txt" onchange="handleFileUpload(event)">
             </div>
             <div id="quest-list-ui">
-                <p class="hint">Chưa có file nào được tải lên. Hãy chọn file chứa danh sách câu hỏi (mỗi dòng 1 câu).</p>
+                <p class="hint">Chưa có file nào được tải lên. Hãy chọn file chứa danh sách câu hỏi.</p>
             </div>
         </div>
 
@@ -90,7 +86,15 @@
                 action: "show_text",
                 timestamp: Date.now()
             });
-            showStatus(text === "" ? "Đã ẩn khung câu hỏi trên LED." : "Đã cập nhật câu hỏi lên LED!");
+            showStatus(text === "" ? "Đã ẩn khung câu hỏi trên LED." : "Đã đẩy câu hỏi lên LED thành công!");
+        }
+
+        function sendAction(actionType) {
+            db.ref('control').update({
+                action: actionType,
+                timestamp: Date.now()
+            });
+            showStatus("Đã gửi lệnh điều khiển!");
         }
 
         function sendCustomQuestion() {
@@ -102,15 +106,6 @@
             }
         }
 
-        function sendCommand(actionType) {
-            db.ref('control').update({
-                action: actionType,
-                timestamp: Date.now()
-            });
-            showStatus("Đã gửi lệnh: " + actionType);
-        }
-
-        // Đọc file danh sách câu hỏi (quest.svg hoặc quest.txt dạng mỗi hàng 1 câu)
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -118,7 +113,6 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const content = e.target.result;
-                // Tách theo từng dòng
                 const lines = content.split(/\r?\n/).filter(line => line.trim() !== "");
                 renderQuestList(lines);
             };
@@ -146,7 +140,7 @@
                 item.appendChild(btnShow);
                 container.appendChild(item);
             });
-            showStatus("Đã tải thành công " + questions.length + " câu hỏi từ file!");
+            showStatus("Đã tải " + questions.length + " câu hỏi từ file lên giao diện!");
         }
 
         function showStatus(msg) {
