@@ -3,166 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LED Display Talkshow - An Viet Homes</title>
+    <title>LED Display - An Viet Homes</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- Firebase SDK từ CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         body, html { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-color: #000; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            overflow: hidden; 
-            font-family: 'Manrope', sans-serif; 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background-color: #000; display: flex; justify-content: center; 
+            align-items: center; overflow: hidden; font-family: 'Manrope', sans-serif; 
         }
-        
         .ratio-16-9 { 
-            position: relative; 
-            width: 100vw; 
-            max-width: calc(100vh * (16 / 9)); 
-            height: 100vh; 
-            max-height: calc(100vw * (9 / 16)); 
-            background: #000; 
-            overflow: hidden; 
+            position: relative; width: 100vw; max-width: calc(100vh * (16 / 9)); 
+            height: 100vh; max-height: calc(100vw * (9 / 16)); background: #000; overflow: hidden; 
         }
-
         #bg-video { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            z-index: 1; 
-            pointer-events: none;
-            user-select: none;
-            -webkit-user-drag: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            object-fit: cover; z-index: 1; pointer-events: none; user-select: none; -webkit-user-drag: none; 
         }
-
-        /* POPUP THÔNG BÁO GÓC TRÁI */
+        /* POPUP THÔNG BÁO */
         .notif-popup {
-            position: absolute;
-            top: 40px; 
-            left: 40px; 
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            position: absolute; top: 40px; left: 40px; z-index: 10;
+            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px; padding: 12px 20px; display: flex; align-items: center; gap: 12px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.4);
-            opacity: 0;
-            transform: translateX(-50px);
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none;
+            opacity: 0; transform: translateX(-50px);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
         }
-
         .notif-popup.active { opacity: 1; transform: translateX(0); }
         .notif-icon { width: 30px; height: 30px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; }
         .notif-content { color: white; font-size: 1.2vw; font-weight: 500; margin: 0; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
-        /* KHUNG CÂU HỎI CHÍNH */
+        /* KHUNG CÂU HỎI KÍNH 3D */
         .question-box {
-            position: absolute;
-            top: 55%; 
-            left: 50%;
-            z-index: 2;
-            
+            position: absolute; top: 55%; left: 50%; z-index: 2;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.6);
             border-left: 1px solid rgba(255, 255, 255, 0.4);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
-            
-            border-radius: 20px;
-            padding: 35px 50px;
-            
-            /* ĐÃ TĂNG CHIỀU RỘNG TỐI ĐA LÊN 90% ĐỂ GIÃN SANG 2 BÊN */
-            max-width: 90%;
-            width: fit-content;
-            
-            text-align: center;
-            opacity: 0;
-            
-            box-shadow: 
-                0 30px 60px rgba(0, 0, 0, 0.4),       
-                0 10px 20px rgba(0, 0, 0, 0.2),       
-                inset 0 1px 2px rgba(255, 255, 255, 0.5); 
-
+            border-radius: 20px; padding: 35px 50px; max-width: 90%; width: fit-content;
+            text-align: center; opacity: 0;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.5);
             transform: translate(-50%, 30px) scale(0.95);
             transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: none;
         }
-        
         .question-box.show { display: block; opacity: 1; transform: translate(-50%, 0) scale(1); }
         .question-box.hide { opacity: 0; transform: translate(-50%, -30px) scale(0.95); }
-        
         #question-text { 
-            color: #ffffff; 
-            font-size: 1.3vw; 
-            font-weight: 700; 
-            margin: 0; 
-            line-height: 1.5; 
-            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+            color: #ffffff; font-size: 1.3vw; font-weight: 700; margin: 0; line-height: 1.5; 
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6); 
         }
     </style>
 </head>
 <body>
-
     <div class="ratio-16-9">
         <video id="bg-video" autoplay loop muted playsinline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen">
             <source src="./bgt.mp4" type="video/mp4">
         </video>
-
         <div class="notif-popup" id="notif-box">
             <div class="notif-icon">🔔</div>
             <p class="notif-content">Bạn vừa nhận được 01 câu hỏi mới từ người tham gia</p>
         </div>
-
         <div class="question-box" id="q-box">
             <p id="question-text"></p>
         </div>
     </div>
 
     <script>
+        // Cấu hình Firebase công khai để đồng bộ từ xa bất kỳ đâu
+        const firebaseConfig = {
+            databaseURL: "https://talkshow-anviet-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         const qBox = document.getElementById('q-box');
         const qText = document.getElementById('question-text');
         const notifBox = document.getElementById('notif-box');
-        
         let currentTop = 55;
 
-        const channel = new BroadcastChannel('talkshow_channel');
+        // Lắng nghe dữ liệu thời gian thực từ Database
+        db.ref('control').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
 
-        channel.onmessage = (event) => {
-            const msg = event.data;
-
-            if (msg === "CMD_SHOW_NOTIFICATION") {
+            // Xử lý lệnh thông báo
+            if (data.action === "notification") {
                 triggerNotification();
                 return;
             }
-            
-            if (msg === "CMD_POS_UP") {
-                currentTop -= 2; 
+
+            // Xử lý dịch chuyển vị trí lên xuống
+            if (data.action === "move_up") {
+                currentTop -= 2;
+                qBox.style.top = currentTop + "%";
+                return;
+            }
+            if (data.action === "move_down") {
+                currentTop += 2;
                 qBox.style.top = currentTop + "%";
                 return;
             }
 
-            if (msg === "CMD_POS_DOWN") {
-                currentTop += 2; 
-                qBox.style.top = currentTop + "%";
-                return;
-            }
-
+            // Xử lý nội dung câu hỏi (Hiện / Ẩn)
+            const msg = data.text || "";
             if (msg === "") {
                 qBox.classList.remove('show');
                 qBox.classList.add('hide');
@@ -186,15 +135,12 @@
                     qBox.classList.add('show');
                 }, 50);
             }
-        };
+        });
 
         function triggerNotification() {
             notifBox.classList.add('active');
-            setTimeout(() => {
-                notifBox.classList.remove('active');
-            }, 5000);
+            setTimeout(() => { notifBox.classList.remove('active'); }, 5000);
         }
-        
         document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
 </body>
