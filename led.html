@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LED Display - An Viet Homes</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- Thư viện Firebase Realtime Database -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
@@ -17,12 +18,11 @@
             position: relative; width: 100vw; max-width: calc(100vh * (16 / 9)); 
             height: 100vh; max-height: calc(100vw * (9 / 16)); background: #000; overflow: hidden; 
         }
-        
         #bg-video { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             object-fit: cover; z-index: 1; pointer-events: none; user-select: none; -webkit-user-drag: none; 
         }
-
+        
         /* POPUP THÔNG BÁO GÓC TRÁI */
         .notif-popup {
             position: absolute; top: 40px; left: 40px; z-index: 10;
@@ -63,11 +63,9 @@
 </head>
 <body>
     <div class="ratio-16-9">
-        <!-- Sử dụng thuộc tính loop chuẩn nguyên bản của HTML5 kết hợp tối ưu phần cứng -->
-        <video id="bg-video" autoplay loop muted playsinline preload="auto">
+        <video id="bg-video" autoplay loop muted playsinline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen">
             <source src="./bgt.mp4" type="video/mp4">
         </video>
-
         <div class="notif-popup" id="notif-box">
             <div class="notif-icon">🔔</div>
             <p class="notif-content">Bạn vừa nhận được 01 câu hỏi mới từ người tham gia</p>
@@ -78,18 +76,10 @@
     </div>
 
     <script>
-        // Cơ chế dự phòng: Nếu video bị dừng đột ngột, tự động kích hoạt phát lại ngay lập tức
-        const video = document.getElementById('bg-video');
-        video.addEventListener('pause', function() {
-            if (!video.ended) {
-                video.play().catch(() => {});
-            }
-        });
-
-        // --- KẾT NỐI FIREBASE REALTIME ĐIỀU KHIỂN CÂU HỎI ---
+        // Kết nối cơ sở dữ liệu thời gian thực trên đám mây
         const firebaseConfig = {
-            databaseURL: "https://talkshow-d92b4-default-rtdb.asia-southeast1.firebasedatabase.app"
-        };
+    databaseURL: "https://talkshow-d92b4-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -98,6 +88,7 @@
         const notifBox = document.getElementById('notif-box');
         let currentTop = 55;
 
+        // Lắng nghe lệnh từ xa bất kể máy quản trị dùng mạng dây hay wifi khác phân vùng
         db.ref('control').on('value', (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
@@ -149,7 +140,6 @@
             notifBox.classList.add('active');
             setTimeout(() => { notifBox.classList.remove('active'); }, 5000);
         }
-
         document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
 </body>
