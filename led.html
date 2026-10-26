@@ -18,14 +18,9 @@
             height: 100vh; max-height: calc(100vw * (9 / 16)); background: #000; overflow: hidden; 
         }
         
-        /* Cấu hình 2 video xếp chồng để tạo cơ chế chuyển đổi mượt mà */
-        .bg-video { 
+        #bg-video { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             object-fit: cover; z-index: 1; pointer-events: none; user-select: none; -webkit-user-drag: none; 
-            opacity: 0; transition: opacity 0.2s ease;
-        }
-        .bg-video.active {
-            opacity: 1;
         }
 
         /* POPUP THÔNG BÁO GÓC TRÁI */
@@ -68,11 +63,8 @@
 </head>
 <body>
     <div class="ratio-16-9">
-        <!-- Sử dụng 2 thẻ video luân phiên để triệt tiêu hoàn toàn độ trễ khi loop -->
-        <video id="vid1" class="bg-video active" muted playsinline disablePictureInPicture>
-            <source src="./bgt.mp4" type="video/mp4">
-        </video>
-        <video id="vid2" class="bg-video" muted playsinline disablePictureInPicture>
+        <!-- Sử dụng 1 thẻ video tối ưu hóa mượt mà bằng cơ chế chủ động tua trước khi kết thúc -->
+        <video id="bg-video" autoplay muted playsinline preload="auto">
             <source src="./bgt.mp4" type="video/mp4">
         </video>
 
@@ -86,42 +78,23 @@
     </div>
 
     <script>
-        // --- XỬ LÝ VIDEO SEAMLESS LOOP KHÔNG KHỰNG ---
-        const v1 = document.getElementById('vid1');
-        const v2 = document.getElementById('vid2');
-        let activeVid = 1;
+        // --- KHẮC PHỤC TRIỆT ĐỂ LỖI CHỚP ĐEN VÀ DỪNG HÌNH KHI LOOP ---
+        const video = document.getElementById('bg-video');
 
-        v1.play();
+        video.addEventListener('timeupdate', function() {
+            // Khi video chạy đến thời điểm chỉ còn cách điểm kết thúc 0.35 giây
+            if (video.duration && (video.duration - video.currentTime <= 0.35)) {
+                // Chủ động tua về 0 ngay lập tức trước khi nó chạm mốc kết thúc, triệt tiêu hoàn toàn hiện tượng khựng/chớp đen
+                video.currentTime = 0;
+                video.play().catch(() => {});
+            }
+        });
 
-        function setupSeamlessLoop(current, next, nextNum) {
-            current.ontimeupdate = function() {
-                // Khi video hiện tại chạy gần đến cuối (còn lại 0.4 giây), kích hoạt video tiếp theo ngầm bên dưới
-                if (current.duration - current.currentTime <= 0.4 && !next.dataset.triggered) {
-                    next.dataset.triggered = "true";
-                    next.currentTime = 0;
-                    next.play();
-                }
-            };
-
-            current.onended = function() {
-                current.pause();
-                current.classList.remove('active');
-                next.classList.add('active');
-                
-                current.removeAttribute('data-triggered');
-                activeVid = nextNum;
-                
-                // Thiết lập tiếp tục cho vòng lặp tiếp theo
-                if (activeVid === 1) {
-                    setupSeamlessLoop(v2, v1, 1);
-                } else {
-                    setupSeamlessLoop(v1, v2, 2);
-                }
-            };
-        }
-
-        // Bắt đầu chu trình loop giữa v1 và v2
-        setupSeamlessLoop(v1, v2, 2);
+        // Đảm bảo video tự động phát lại nếu vô tình bị gián đoạn
+        video.addEventListener('ended', function() {
+            video.currentTime = 0;
+            video.play().catch(() => {});
+        });
 
 
         // --- KẾT NỐI FIREBASE REALTIME ĐIỀU KHIỂN CÂU HỎI ---
