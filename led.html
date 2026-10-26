@@ -63,8 +63,8 @@
 </head>
 <body>
     <div class="ratio-16-9">
-        <!-- Sử dụng 1 thẻ video tối ưu hóa mượt mà bằng cơ chế chủ động tua trước khi kết thúc -->
-        <video id="bg-video" autoplay muted playsinline preload="auto">
+        <!-- Sử dụng thuộc tính loop chuẩn nguyên bản của HTML5 kết hợp tối ưu phần cứng -->
+        <video id="bg-video" autoplay loop muted playsinline preload="auto">
             <source src="./bgt.mp4" type="video/mp4">
         </video>
 
@@ -78,24 +78,13 @@
     </div>
 
     <script>
-        // --- KHẮC PHỤC TRIỆT ĐỂ LỖI CHỚP ĐEN VÀ DỪNG HÌNH KHI LOOP ---
+        // Cơ chế dự phòng: Nếu video bị dừng đột ngột, tự động kích hoạt phát lại ngay lập tức
         const video = document.getElementById('bg-video');
-
-        video.addEventListener('timeupdate', function() {
-            // Khi video chạy đến thời điểm chỉ còn cách điểm kết thúc 0.35 giây
-            if (video.duration && (video.duration - video.currentTime <= 0.35)) {
-                // Chủ động tua về 0 ngay lập tức trước khi nó chạm mốc kết thúc, triệt tiêu hoàn toàn hiện tượng khựng/chớp đen
-                video.currentTime = 0;
+        video.addEventListener('pause', function() {
+            if (!video.ended) {
                 video.play().catch(() => {});
             }
         });
-
-        // Đảm bảo video tự động phát lại nếu vô tình bị gián đoạn
-        video.addEventListener('ended', function() {
-            video.currentTime = 0;
-            video.play().catch(() => {});
-        });
-
 
         // --- KẾT NỐI FIREBASE REALTIME ĐIỀU KHIỂN CÂU HỎI ---
         const firebaseConfig = {
