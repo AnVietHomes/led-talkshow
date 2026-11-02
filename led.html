@@ -58,7 +58,7 @@
         .question-box.hide { opacity: 0; transform: translate(-50%, -30px) scale(0.95); }
         #question-text { color: #ffffff; font-size: 1.3vw; font-weight: 700; margin: 0; line-height: 1.5; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
 
-        /* ĐỒNG HỒ ĐẾM NGƯỢC - HIỆU ỨNG LIQUID GLASS TYPOGRAPHY TINH CHỈNH CHUẨN XÁC */
+        /* ĐỒNG HỒ ĐẾM NGƯỢC - ĐÃ SIẾT CHẶT KHOẢNG CÁCH THỊ GIÁC */
         .timer-display-container {
             position: absolute; top: 35%; left: 50%; z-index: 3;
             text-align: center; opacity: 0;
@@ -70,27 +70,28 @@
         }
         .timer-display-container.show { display: block; opacity: 1; transform: translate(-50%, 0) scale(1); }
 
-        /* Phần text nội dung: Font Manrope mảnh hơn (weight 500), khoảng cách dưới cực ngắn, hiệu ứng kính lỏng chữ tinh tế */
+        /* Tiêu đề chữ: Font Manrope 500 mảnh, ép sát xuống bên dưới */
         .timer-custom-title {
             color: rgba(255, 255, 255, 0.95);
             font-size: 1.4vw;
-            font-weight: 500; /* Font mảnh tinh tế theo yêu cầu */
+            font-weight: 500;
             letter-spacing: 3px;
-            margin: 0 0 4px 0; /* Co lại khoảng cách cực sát với đồng hồ bên dưới */
+            margin: 0 0 -0.4vw 0; /* Ép lề âm để thu hẹp khoảng cách tuyệt đối */
+            line-height: 1;      /* Triệt tiêu khoảng trống thừa ở chân chữ */
             text-transform: uppercase;
-            /* Hiệu ứng Liquid Glass Typography trực tiếp trên từng ký tự */
             filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.85));
             text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5), 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
-        /* Số đồng hồ: Size to hơn hẳn (7.5vw), dày dặn, hiệu ứng nổi khối 3D quang học */
+        /* Số đồng hồ: Size 8vw cực đại, đẩy sát lên trên */
         .timer-custom-clock {
             color: #ffffff;
-            font-size: 7.5vw; /* Tăng kích thước số to hơn rõ rệt */
+            font-size: 8vw;
             font-weight: 800;
             margin: 0;
+            line-height: 1;      /* Triệt tiêu khoảng trống thừa đỉnh số */
             font-family: 'Manrope', sans-serif;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.95));
             text-shadow: 0 2px 4px rgba(255, 255, 255, 0.7), 0 0 30px rgba(94, 234, 212, 0.5);
         }
@@ -101,6 +102,7 @@
             font-size: 3.2vw;
             font-weight: 800;
             margin: 0;
+            line-height: 1.1;
             letter-spacing: 2px;
             filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.95));
             text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5), 0 0 35px rgba(244, 63, 94, 0.7);
@@ -119,14 +121,12 @@
             <p class="notif-content">Bạn vừa nhận được 01 câu hỏi mới từ người tham gia</p>
         </div>
 
-        <!-- ĐỒNG HỒ ĐẾM NGƯỢC (ĐÃ TỐI ƯU FONT MẢNH, KHOẢNG CÁCH SÁT & HIỆU ỨNG LIQUID GLASS CHỮ) -->
         <div class="timer-display-container" id="timer-display-box">
             <p class="timer-custom-title" id="t-title">CHƯƠNG TRÌNH BẮT ĐẦU SAU</p>
             <p class="timer-custom-clock" id="t-clock">00:00</p>
             <p class="timer-custom-ended" id="t-ended">HẾT GIỜ BẮT ĐẦU!</p>
         </div>
 
-        <!-- KHUNG CÂU HỎI -->
         <div class="question-box" id="q-box">
             <p id="question-text"></p>
         </div>
@@ -183,7 +183,7 @@
             setTimeout(() => { notifBox.classList.remove('active'); }, 5000);
         }
 
-        // 2. XỬ LÝ ĐỒNG HỒ ĐẾM NGƯỢC & VỊ TRÍ ĐỒNG HỒ
+        // 2. XỬ LÝ ĐỒNG HỒ ĐẾM NGƯỢC
         const timerDisplayBox = document.getElementById('timer-display-box');
         const tTitle = document.getElementById('t-title');
         const tClock = document.getElementById('t-clock');
