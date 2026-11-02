@@ -58,7 +58,7 @@
         .question-box.hide { opacity: 0; transform: translate(-50%, -30px) scale(0.95); }
         #question-text { color: #ffffff; font-size: 1.3vw; font-weight: 700; margin: 0; line-height: 1.5; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
 
-        /* ĐỒNG HỒ ĐẾM NGƯỢC - ĐÃ SIẾT CHẶT KHOẢNG CÁCH THỊ GIÁC */
+        /* ĐỒNG HỒ ĐẾM NGƯỢC */
         .timer-display-container {
             position: absolute; top: 35%; left: 50%; z-index: 3;
             text-align: center; opacity: 0;
@@ -67,45 +67,49 @@
             display: none;
             pointer-events: none;
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0px;
         }
-        .timer-display-container.show { display: block; opacity: 1; transform: translate(-50%, 0) scale(1); }
+        .timer-display-container.show { display: flex; opacity: 1; transform: translate(-50%, 0) scale(1); }
 
-        /* Tiêu đề chữ: Font Manrope 500 mảnh, ép sát xuống bên dưới */
         .timer-custom-title {
             color: rgba(255, 255, 255, 0.95);
-            font-size: 1.4vw;
+            font-size: 1.3vw;
             font-weight: 500;
             letter-spacing: 3px;
-            margin: 0 0 -0.4vw 0; /* Ép lề âm để thu hẹp khoảng cách tuyệt đối */
-            line-height: 1;      /* Triệt tiêu khoảng trống thừa ở chân chữ */
+            margin: 0;
+            padding: 0;
             text-transform: uppercase;
             filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.85));
             text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5), 0 0 15px rgba(255, 255, 255, 0.2);
+            transform: translateY(8px);
+            z-index: 2;
         }
 
-        /* Số đồng hồ: Size 8vw cực đại, đẩy sát lên trên */
         .timer-custom-clock {
             color: #ffffff;
-            font-size: 8vw;
+            font-size: 7.5vw;
             font-weight: 800;
             margin: 0;
-            line-height: 1;      /* Triệt tiêu khoảng trống thừa đỉnh số */
+            padding: 0;
             font-family: 'Manrope', sans-serif;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.95));
-            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.7), 0 0 30px rgba(94, 234, 212, 0.5);
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.7), 0 0 30px rgba(94, 234, 212, 0.4);
         }
 
-        /* Text khi hết giờ */
+        /* Khi hết giờ: đổi sang màu xanh sáng sang trọng, giữ hiệu ứng nổi khối */
         .timer-custom-ended {
-            color: #f43f5e;
+            color: #38bdf8; 
             font-size: 3.2vw;
             font-weight: 800;
             margin: 0;
-            line-height: 1.1;
+            padding: 0;
             letter-spacing: 2px;
             filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.95));
-            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5), 0 0 35px rgba(244, 63, 94, 0.7);
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5), 0 0 35px rgba(56, 189, 248, 0.7);
             display: none;
         }
     </style>
@@ -140,7 +144,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. XỬ LÝ CÂU HỎI & VỊ TRÍ CÂU HỎI
         const qBox = document.getElementById('q-box');
         const qText = document.getElementById('question-text');
         const notifBox = document.getElementById('notif-box');
@@ -183,7 +186,6 @@
             setTimeout(() => { notifBox.classList.remove('active'); }, 5000);
         }
 
-        // 2. XỬ LÝ ĐỒNG HỒ ĐẾM NGƯỢC
         const timerDisplayBox = document.getElementById('timer-display-box');
         const tTitle = document.getElementById('t-title');
         const tClock = document.getElementById('t-clock');
@@ -227,6 +229,7 @@
                 updateTimerDisplay();
                 tEnded.style.display = 'none';
                 tClock.style.display = 'block';
+                tTitle.style.display = 'block'; // Hiện lại tiêu đề khi reset
                 tTitle.innerText = configRunningText;
                 timerDisplayBox.classList.add('show');
             } else if (cmd === 'hide') {
@@ -240,6 +243,7 @@
             timerDisplayBox.classList.add('show');
             tEnded.style.display = 'none';
             tClock.style.display = 'block';
+            tTitle.style.display = 'block'; // Hiện tiêu đề lúc đang đếm
             tTitle.innerText = configRunningText;
 
             updateTimerDisplay();
@@ -252,9 +256,12 @@
                     timerInterval = null;
                     remainingSeconds = 0;
                     updateTimerDisplay();
+                    
+                    // KHI HẾT GIỜ: Ẩn đồng hồ & tiêu đề đếm, hiển thị thông báo kết thúc màu xanh
                     tClock.style.display = 'none';
+                    tTitle.style.display = 'none'; // Ẩn dòng text lúc đếm ngược đi
                     tEnded.innerText = configEndedText;
-                    tEnded.style.display = 'block';
+                    tEnded.style.display = 'block'; // Hiện chữ kết thúc màu xanh
                 } else {
                     updateTimerDisplay();
                 }
