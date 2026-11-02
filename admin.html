@@ -83,6 +83,15 @@
 
     <div class="admin-container">
         
+        <!-- CARD MỚI: ĐIỀU KHIỂN PHÁO HOA -->
+        <div class="card">
+            <div class="card-title">🎆 Hiệu Ứng Pháo Hoa Sân Khấu</div>
+            <div class="btn-row">
+                <button class="btn-success" onclick="controlFireworks(true)">🎆 BẬT PHÁO HOA</button>
+                <button class="btn-danger" onclick="controlFireworks(false)">🛑 TẮT PHÁO HOA</button>
+            </div>
+        </div>
+
         <!-- CARD 1: ĐỒNG HỒ ĐẾM NGƯỢC & VỊ TRÍ -->
         <div class="card">
             <div class="card-title">⏱️ Điều Khiển Đồng Hồ Đếm Ngược & Vị Trí</div>
@@ -170,8 +179,16 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Biến lưu trữ danh sách câu hỏi toàn cục để tránh lỗi ký tự đặc biệt
         let loadedQuestions = [];
+
+        // HÀM ĐIỀU KHIỂN PHÁO HOA
+        function controlFireworks(status) {
+            db.ref('fireworks').set({
+                active: status,
+                timestamp: Date.now()
+            });
+            showToast(status ? "🎆 Đã BẬT pháo hoa!" : "🛑 Đã TẮT pháo hoa!");
+        }
 
         function controlTimer(cmd) {
             const seconds = parseInt(document.getElementById('timer-seconds').value) || 60;
@@ -201,7 +218,6 @@
             showToast(text === "" ? "Đã ẩn câu hỏi." : "Đã phát câu hỏi!");
         }
 
-        // Hàm gọi câu hỏi từ danh sách thông qua chỉ số (index)
         function sendQuestionByIndex(index) {
             if (loadedQuestions[index] !== undefined) {
                 sendText(loadedQuestions[index]);
@@ -227,7 +243,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const lines = e.target.result.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
-                loadedQuestions = lines; // Lưu vào biến toàn cục
+                loadedQuestions = lines;
                 renderQuestList(lines);
             };
             reader.readAsText(file);
