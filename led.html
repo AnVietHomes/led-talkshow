@@ -37,7 +37,7 @@
         .notif-icon { width: 30px; height: 30px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; }
         .notif-content { color: white; font-size: 1.2vw; font-weight: 500; margin: 0; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
-        /* KHUNG CÂU HỎI LIQUID GLASS CHUẨN */
+        /* KHUNG CÂU HỎI LIQUID GLASS CŨ */
         .question-box {
             position: absolute; top: 60%; left: 50%; z-index: 2;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.06) 100%);
@@ -58,9 +58,9 @@
         .question-box.hide { opacity: 0; transform: translate(-50%, -30px) scale(0.95); }
         #question-text { color: #ffffff; font-size: 1.3vw; font-weight: 700; margin: 0; line-height: 1.5; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
 
-        /* ĐỒNG HỒ ĐẾM NGƯỢC KIỂU LIQUID GLASS TYPOGRAPHY (KHÔNG BOX NỀN) */
+        /* ĐỒNG HỒ ĐẾM NGƯỢC - HIỆU ỨNG LIQUID GLASS TYPOGRAPHY TỪNG DÒNG CHỮ (KHÔNG CÓ DẢI KHUNG NỀN CHUNG) */
         .timer-display-container {
-            position: absolute; top: 25%; left: 50%; z-index: 3;
+            position: absolute; top: 35%; left: 50%; z-index: 3;
             text-align: center; opacity: 0;
             transform: translate(-50%, -20px) scale(0.95);
             transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -70,43 +70,39 @@
         }
         .timer-display-container.show { display: block; opacity: 1; transform: translate(-50%, 0) scale(1); }
 
-        /* Phần nội dung text phía trên đồng hồ */
+        /* Tiêu đề chữ độc lập với hiệu ứng quang học nổi khối riêng */
         .timer-custom-title {
             color: #ffffff;
-            font-size: 1.6vw;
+            font-size: 1.5vw;
             font-weight: 800;
             letter-spacing: 3px;
-            margin: 0 0 10px 0;
+            margin: 0 0 12px 0;
             text-transform: uppercase;
-            /* Hiệu ứng quang học Liquid Glass trực tiếp lên chữ: blur nhẹ nền 8px & drop shadow nổi khối */
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.3);
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.9));
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
         }
 
-        /* Số đồng hồ dạng Phút:Giây (Kích thước lớn hơn câu hỏi) */
+        /* Đồng hồ Phút:Giây độc lập với hiệu ứng quang học riêng */
         .timer-custom-clock {
             color: #ffffff;
-            font-size: 6vw;
+            font-size: 5.5vw;
             font-weight: 800;
             margin: 0;
             font-family: 'Manrope', sans-serif;
             letter-spacing: 2px;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            text-shadow: 0 6px 25px rgba(0, 0, 0, 0.9), 0 0 30px rgba(94, 234, 212, 0.5);
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.95));
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5), 0 0 25px rgba(94, 234, 212, 0.4);
         }
 
-        /* Text hiển thị khi hết giờ */
+        /* Text khi hết giờ độc lập */
         .timer-custom-ended {
             color: #f43f5e;
-            font-size: 3vw;
+            font-size: 2.8vw;
             font-weight: 800;
             margin: 0;
             letter-spacing: 2px;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            text-shadow: 0 6px 25px rgba(0, 0, 0, 0.9), 0 0 35px rgba(244, 63, 94, 0.8);
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.95));
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.4), 0 0 30px rgba(244, 63, 94, 0.6);
             display: none;
         }
     </style>
@@ -122,11 +118,11 @@
             <p class="notif-content">Bạn vừa nhận được 01 câu hỏi mới từ người tham gia</p>
         </div>
 
-        <!-- ĐỒNG HỒ ĐẾM NGƯỢC (HIỆU ỨNG LIQUID GLASS TYPOGRAPHY TRỰC TIẾP) -->
+        <!-- ĐỒNG HỒ ĐẾM NGƯỢC (TỪNG DÒNG CHỮ HIỆU ỨNG LIQUID GLASS ĐỘC LẬP) -->
         <div class="timer-display-container" id="timer-display-box">
-            <p class="timer-custom-title" id="t-title">THỜI GIAN TRẢ LỜI CÒN LẠI</p>
+            <p class="timer-custom-title" id="t-title">CHƯƠNG TRÌNH BẮT ĐẦU SAU</p>
             <p class="timer-custom-clock" id="t-clock">00:00</p>
-            <p class="timer-custom-ended" id="t-ended">HẾT GIỜ NÊU CÂU HỎI!</p>
+            <p class="timer-custom-ended" id="t-ended">HẾT GIỜ BẮT ĐẦU!</p>
         </div>
 
         <!-- KHUNG CÂU HỎI -->
@@ -143,7 +139,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. XỬ LÝ CÂU HỎI & POPUP
+        // 1. XỬ LÝ CÂU HỎI & VỊ TRÍ CÂU HỎI
         const qBox = document.getElementById('q-box');
         const qText = document.getElementById('question-text');
         const notifBox = document.getElementById('notif-box');
@@ -186,7 +182,7 @@
             setTimeout(() => { notifBox.classList.remove('active'); }, 5000);
         }
 
-        // 2. XỬ LÝ ĐỒNG HỒ ĐẾM NGƯỢC (PHÚT:GIÂY)
+        // 2. XỬ LÝ ĐỒNG HỒ ĐẾM NGƯỢC & VỊ TRÍ ĐỒNG HỒ
         const timerDisplayBox = document.getElementById('timer-display-box');
         const tTitle = document.getElementById('t-title');
         const tClock = document.getElementById('t-clock');
@@ -196,14 +192,26 @@
         let remainingSeconds = 0;
         let configRunningText = "";
         let configEndedText = "";
+        let timerTopPos = 35; // Vị trí mặc định nằm thấp hơn (35%)
 
         db.ref('timer_control').on('value', (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
 
             const cmd = data.command;
-            configRunningText = data.runningText || "THỜI GIAN CÒN LẠI";
+            configRunningText = data.runningText || "CHƯƠNG TRÌNH BẮT ĐẦU SAU";
             configEndedText = data.endedText || "HẾT GIỜ!";
+
+            if (cmd === 'timer_move_up') {
+                timerTopPos -= 3;
+                timerDisplayBox.style.top = timerTopPos + "%";
+                return;
+            }
+            if (cmd === 'timer_move_down') {
+                timerTopPos += 3;
+                timerDisplayBox.style.top = timerTopPos + "%";
+                return;
+            }
 
             if (cmd === 'start') {
                 if (!timerInterval) {
@@ -227,6 +235,7 @@
         });
 
         function startTimer() {
+            timerDisplayBox.style.top = timerTopPos + "%";
             timerDisplayBox.classList.add('show');
             tEnded.style.display = 'none';
             tClock.style.display = 'block';
@@ -259,7 +268,6 @@
         function updateTimerDisplay() {
             const mins = Math.floor(remainingSeconds / 60);
             const secs = remainingSeconds % 60;
-            // Định dạng Phút:Giây chuẩn xác (MM:SS)
             tClock.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
