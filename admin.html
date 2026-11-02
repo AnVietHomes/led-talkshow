@@ -101,7 +101,6 @@
                 </div>
             </div>
 
-            <!-- Nút điều chỉnh vị trí đồng hồ -->
             <div class="sub-box" style="margin-bottom: 12px;">
                 <span>Căn chỉnh vị trí Đồng hồ trên LED:</span>
                 <div style="display: flex; gap: 6px;">
@@ -171,6 +170,9 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // Biến lưu trữ danh sách câu hỏi toàn cục để tránh lỗi ký tự đặc biệt
+        let loadedQuestions = [];
+
         function controlTimer(cmd) {
             const seconds = parseInt(document.getElementById('timer-seconds').value) || 60;
             const runningText = document.getElementById('timer-running-text').value.trim();
@@ -199,6 +201,13 @@
             showToast(text === "" ? "Đã ẩn câu hỏi." : "Đã phát câu hỏi!");
         }
 
+        // Hàm gọi câu hỏi từ danh sách thông qua chỉ số (index)
+        function sendQuestionByIndex(index) {
+            if (loadedQuestions[index] !== undefined) {
+                sendText(loadedQuestions[index]);
+            }
+        }
+
         function sendAction(actionType) {
             db.ref('control').update({ action: actionType, timestamp: Date.now() });
             showToast("Đã gửi lệnh điều khiển!");
@@ -218,6 +227,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const lines = e.target.result.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
+                loadedQuestions = lines; // Lưu vào biến toàn cục
                 renderQuestList(lines);
             };
             reader.readAsText(file);
@@ -235,7 +245,7 @@
                         <div class="quest-text-content">${q}</div>
                     </div>
                     <div style="display:flex; gap:6px;">
-                        <button class="btn-primary" style="padding:6px 10px; font-size:12px;" onclick="sendText('${q.replace(/'/g, "\\'")}')">✨ Hiện LED</button>
+                        <button class="btn-primary" style="padding:6px 10px; font-size:12px;" onclick="sendQuestionByIndex(${index})">✨ Hiện LED</button>
                         <button class="btn-danger" style="padding:6px 10px; font-size:12px;" onclick="sendText('')">Ẩn</button>
                     </div>
                 `;
