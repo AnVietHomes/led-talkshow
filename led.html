@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LED Display - An Viet Homes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
@@ -37,7 +37,7 @@
         .notif-icon { width: 30px; height: 30px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; }
         .notif-content { color: white; font-size: 1.2vw; font-weight: 500; margin: 0; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
-        /* KHUNG CÂU HỎI LIQUID GLASS CŨ */
+        /* KHUNG CÂU HỎI LIQUID GLASS CHUẨN */
         .question-box {
             position: absolute; top: 60%; left: 50%; z-index: 2;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.06) 100%);
@@ -58,7 +58,7 @@
         .question-box.hide { opacity: 0; transform: translate(-50%, -30px) scale(0.95); }
         #question-text { color: #ffffff; font-size: 1.3vw; font-weight: 700; margin: 0; line-height: 1.5; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
 
-        /* ĐỒNG HỒ ĐẾM NGƯỢC - HIỆU ỨNG LIQUID GLASS TYPOGRAPHY TỪNG DÒNG CHỮ (KHÔNG CÓ DẢI KHUNG NỀN CHUNG) */
+        /* ĐỒNG HỒ ĐẾM NGƯỢC - HIỆU ỨNG LIQUID GLASS TYPOGRAPHY TINH CHỈNH CHUẨN XÁC */
         .timer-display-container {
             position: absolute; top: 35%; left: 50%; z-index: 3;
             text-align: center; opacity: 0;
@@ -70,39 +70,40 @@
         }
         .timer-display-container.show { display: block; opacity: 1; transform: translate(-50%, 0) scale(1); }
 
-        /* Tiêu đề chữ độc lập với hiệu ứng quang học nổi khối riêng */
+        /* Phần text nội dung: Font Manrope mảnh hơn (weight 500), khoảng cách dưới cực ngắn, hiệu ứng kính lỏng chữ tinh tế */
         .timer-custom-title {
-            color: #ffffff;
-            font-size: 1.5vw;
-            font-weight: 800;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.4vw;
+            font-weight: 500; /* Font mảnh tinh tế theo yêu cầu */
             letter-spacing: 3px;
-            margin: 0 0 12px 0;
+            margin: 0 0 4px 0; /* Co lại khoảng cách cực sát với đồng hồ bên dưới */
             text-transform: uppercase;
-            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.9));
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+            /* Hiệu ứng Liquid Glass Typography trực tiếp trên từng ký tự */
+            filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.85));
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5), 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
-        /* Đồng hồ Phút:Giây độc lập với hiệu ứng quang học riêng */
+        /* Số đồng hồ: Size to hơn hẳn (7.5vw), dày dặn, hiệu ứng nổi khối 3D quang học */
         .timer-custom-clock {
             color: #ffffff;
-            font-size: 5.5vw;
+            font-size: 7.5vw; /* Tăng kích thước số to hơn rõ rệt */
             font-weight: 800;
             margin: 0;
             font-family: 'Manrope', sans-serif;
-            letter-spacing: 2px;
-            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.95));
-            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5), 0 0 25px rgba(94, 234, 212, 0.4);
+            letter-spacing: 3px;
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.95));
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.7), 0 0 30px rgba(94, 234, 212, 0.5);
         }
 
-        /* Text khi hết giờ độc lập */
+        /* Text khi hết giờ */
         .timer-custom-ended {
             color: #f43f5e;
-            font-size: 2.8vw;
+            font-size: 3.2vw;
             font-weight: 800;
             margin: 0;
             letter-spacing: 2px;
-            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.95));
-            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.4), 0 0 30px rgba(244, 63, 94, 0.6);
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.95));
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5), 0 0 35px rgba(244, 63, 94, 0.7);
             display: none;
         }
     </style>
@@ -118,7 +119,7 @@
             <p class="notif-content">Bạn vừa nhận được 01 câu hỏi mới từ người tham gia</p>
         </div>
 
-        <!-- ĐỒNG HỒ ĐẾM NGƯỢC (TỪNG DÒNG CHỮ HIỆU ỨNG LIQUID GLASS ĐỘC LẬP) -->
+        <!-- ĐỒNG HỒ ĐẾM NGƯỢC (ĐÃ TỐI ƯU FONT MẢNH, KHOẢNG CÁCH SÁT & HIỆU ỨNG LIQUID GLASS CHỮ) -->
         <div class="timer-display-container" id="timer-display-box">
             <p class="timer-custom-title" id="t-title">CHƯƠNG TRÌNH BẮT ĐẦU SAU</p>
             <p class="timer-custom-clock" id="t-clock">00:00</p>
@@ -192,7 +193,7 @@
         let remainingSeconds = 0;
         let configRunningText = "";
         let configEndedText = "";
-        let timerTopPos = 35; // Vị trí mặc định nằm thấp hơn (35%)
+        let timerTopPos = 35;
 
         db.ref('timer_control').on('value', (snapshot) => {
             const data = snapshot.val();
