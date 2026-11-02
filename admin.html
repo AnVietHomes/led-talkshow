@@ -10,17 +10,9 @@
     <style>
         * { box-sizing: border-box; }
         body {
-            font-family: 'Manrope', sans-serif;
-            background-color: #0b0f19;
-            color: #ffffff;
-            margin: 0;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Manrope', sans-serif; background-color: #0b0f19; color: #ffffff;
+            margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
-
         .admin-header {
             width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center;
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
@@ -54,7 +46,7 @@
         .input-row { display: grid; grid-template-columns: 1fr 2fr 2fr; gap: 10px; margin-bottom: 12px; }
         @media(max-width: 600px) { .input-row { grid-template-columns: 1fr; } }
 
-        .btn-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+        .btn-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
 
         button {
             padding: 10px 14px; font-family: inherit; font-size: 13px; font-weight: 700; border: none;
@@ -72,7 +64,7 @@
         .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
         .file-label { color: #94a3b8; font-size: 13px; font-weight: 600; }
 
-        .quest-scroll-area { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .quest-scroll-area { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         .quest-row { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); padding: 10px 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
         @media(max-width: 600px) { .quest-row { flex-direction: column; align-items: flex-start; } }
         .quest-info { display: flex; align-items: flex-start; gap: 10px; flex-grow: 1; }
@@ -91,37 +83,47 @@
 
     <div class="admin-container">
         
-        <!-- CARD 1: ĐIỀU KHIỂN ĐỒNG HỒ ĐẾM NGƯỢC (TÍNH NĂNG MỚI) -->
+        <!-- CARD 1: ĐỒNG HỒ ĐẾM NGƯỢC & VỊ TRÍ -->
         <div class="card">
-            <div class="card-title">⏱️ Thiết Lập & Điều Khiển Đồng Hồ Đếm Ngược</div>
+            <div class="card-title">⏱️ Điều Khiển Đồng Hồ Đếm Ngược & Vị Trí</div>
             <div class="input-row">
                 <div>
                     <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">Thời gian (Giây):</label>
-                    <input type="number" id="timer-seconds" value="180" min="5" placeholder="Ví dụ: 180">
+                    <input type="number" id="timer-seconds" value="180" min="5">
                 </div>
                 <div>
-                    <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">Tiêu đề khi đang đếm:</label>
-                    <input type="text" id="timer-running-text" value="THỜI GIAN TRẢ LỜI CÒN LẠI">
+                    <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">Tiêu đề đếm ngược:</label>
+                    <input type="text" id="timer-running-text" value="CHƯƠNG TRÌNH BẮT ĐẦU SAU">
                 </div>
                 <div>
                     <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">Thông báo khi kết thúc:</label>
-                    <input type="text" id="timer-ended-text" value="HẾT GIỜ NÊU CÂU HỎI!">
+                    <input type="text" id="timer-ended-text" value="HẾT GIỜ BẮT ĐẦU!">
                 </div>
             </div>
+
+            <!-- Nút điều chỉnh vị trí đồng hồ -->
+            <div class="sub-box" style="margin-bottom: 12px;">
+                <span>Căn chỉnh vị trí Đồng hồ trên LED:</span>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn-secondary" style="padding: 6px 12px;" onclick="sendTimerAction('timer_move_up')">⬆️ Lên</button>
+                    <button class="btn-secondary" style="padding: 6px 12px;" onclick="sendTimerAction('timer_move_down')">⬇️ Xuống</button>
+                </div>
+            </div>
+
             <div class="btn-row">
-                <button class="btn-success" onclick="controlTimer('start')">▶️ BẮT ĐẦU ĐẾM</button>
+                <button class="btn-success" onclick="controlTimer('start')">▶️ BẮT ĐẦU</button>
                 <button class="btn-warning" onclick="controlTimer('pause')">⏸️ TẠM DỪNG</button>
-                <button class="btn-secondary" onclick="controlTimer('reset')">🔄 RESET TỰ ĐẦU</button>
+                <button class="btn-secondary" onclick="controlTimer('reset')">🔄 RESET</button>
                 <button class="btn-danger" onclick="controlTimer('hide')">🗑️ ẨN ĐỒNG HỒ</button>
             </div>
         </div>
 
-        <!-- CARD 2: ĐIỀU KHIỂN NHANH VỊ TRÍ & POPUP -->
+        <!-- CARD 2: ĐIỀU KHIỂN CÂU HỎI & VỊ TRÍ CÂU HỎI -->
         <div class="card">
-            <div class="card-title">🎛️ Điều Khiển Vị Trí Màn LED</div>
+            <div class="card-title">🎛️ Điều Khiển Vị Trí & Câu Hỏi LED</div>
             <div class="control-grid">
                 <div class="sub-box">
-                    <span>Căn chỉnh vị trí LED:</span>
+                    <span>Vị trí Khung Câu Hỏi:</span>
                     <div style="display: flex; gap: 6px;">
                         <button class="btn-secondary" onclick="sendAction('move_up')">⬆️ Lên</button>
                         <button class="btn-secondary" onclick="sendAction('move_down')">⬇️ Xuống</button>
@@ -169,13 +171,12 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // GỬI ĐIỀU KHIỂN ĐỒNG HỒ ĐẾM NGƯỢC
         function controlTimer(cmd) {
             const seconds = parseInt(document.getElementById('timer-seconds').value) || 60;
             const runningText = document.getElementById('timer-running-text').value.trim();
             const endedText = document.getElementById('timer-ended-text').value.trim();
 
-            db.ref('timer_control').set({
+            db.ref('timer_control').update({
                 command: cmd,
                 duration: seconds,
                 runningText: runningText,
@@ -183,6 +184,14 @@
                 timestamp: Date.now()
             });
             showToast("Đã gửi lệnh đồng hồ: " + cmd.toUpperCase());
+        }
+
+        function sendTimerAction(actionType) {
+            db.ref('timer_control').update({
+                command: actionType,
+                timestamp: Date.now()
+            });
+            showToast("Đã đổi vị trí đồng hồ!");
         }
 
         function sendText(text) {
